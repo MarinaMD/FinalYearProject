@@ -12,3 +12,295 @@
 
 </body>
 </html>
+
+
+
+<!--%h1 Graph test-->
+<!--%head-->
+<!--%toolbar-->
+<!--Toolbar goes here-->
+    
+<!--%body-->
+<!--#paper-->
+
+<!--:javascript-->
+<!--  $(function() {-->
+   
+<!--    var graph = new joint.dia.Graph();-->
+
+<!--    var paper = new joint.dia.Paper({-->
+<!--        el: $('#paper'),-->
+<!--        width: 1366,-->
+<!--        height: 768,-->
+<!--        gridSize: 1,-->
+<!--        model: graph,-->
+<!--        perpendicularLinks: true,-->
+<!--        restrictTranslate: true,-->
+<!--        snapLinks: true,-->
+<!--        linkPinning: false,-->
+<!--        embeddingMode: true,-->
+<!--        highlighting: {-->
+<!--            'default': {-->
+<!--                name: 'stroke',-->
+<!--                options: {-->
+<!--                    padding: 6-->
+<!--                }-->
+<!--            },-->
+<!--            'embedding': {-->
+<!--                name: 'addClass',-->
+<!--                options: {-->
+<!--                    className: 'highlighted-parent'-->
+<!--                }-->
+<!--            }-->
+<!--        },-->
+    
+<!--        validateEmbedding: function(childView, parentView) {-->
+    
+<!--            return parentView.model instanceof joint.shapes.devs.Coupled;-->
+<!--        },-->
+    
+<!--        validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {-->
+    
+<!--            return sourceMagnet != targetMagnet;-->
+<!--        }-->
+<!--    });-->
+    
+    
+<!--    joint.shapes.html={};-->
+<!--    joint.shapes.html.Element = joint.shapes.basic.Rect.extend({-->
+<!--        defaults: joint.util.deepSupplement({-->
+<!--            type: 'html.Element',-->
+<!--            attrs: {-->
+<!--                rect: { stroke: 'none', 'fill-opacity': 0 }-->
+<!--            }-->
+<!--        }, joint.shapes.basic.Rect.prototype.defaults)-->
+<!--    });-->
+    
+<!--    joint.shapes.html.ElementView = joint.dia.ElementView.extend({-->
+
+<!--        template: [-->
+<!--            '<div class="html-element">',-->
+<!--            '<button class="button">Node</button>',-->
+<!--            '</div>'-->
+<!--        ].join(''),-->
+
+<!--        initialize: function() {-->
+<!--            _.bindAll(this, 'updateBox');-->
+<!--            joint.dia.ElementView.prototype.initialize.apply(this, arguments);-->
+<!--            this.$box = $(_.template(this.template)());-->
+<!--            this.$box.find('.button').on('click', this.addNode);-->
+<!--            this.updateBox();-->
+<!--        },-->
+<!--        render: function() {-->
+<!--            joint.dia.ElementView.prototype.render.apply(this, arguments);-->
+<!--            this.paper.$el.prepend(this.$box);-->
+<!--            this.updateBox();-->
+<!--            return this;-->
+<!--        },-->
+<!--        updateBox: function() {-->
+<!--            // Set the position and dimension of the box so that it covers the JointJS element.-->
+<!--            var bbox = this.model.getBBox();-->
+<!--            this.$box.css({-->
+<!--                width: bbox.width,-->
+<!--                height: bbox.height,-->
+<!--                left: bbox.x,-->
+<!--                top: bbox.y,-->
+<!--                transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)'-->
+<!--            });-->
+<!--        },-->
+<!--        addNode: function(){-->
+<!--           var node = member(100,50).attr('.label/text', 'New Model');-->
+<!--           var newtable= model.clone().position(130,150);-->
+           
+<!--           graph.addCells([node, newtable])-->
+<!--           node.embed(newtable);-->
+<!--        }-->
+<!--    });-->
+    
+<!--   joint.shapes.basic.Table = joint.shapes.basic.Generic.extend({-->
+<!--       markup: [-->
+<!--        '<g class="rotatable"><g class="scalable"><rect class="body"/></g>',-->
+<!--        '<g class="ports">',-->
+<!--        '<rect class="port12" port="12"/><rect class="port13" port="13"/>',-->
+        
+<!--        '</g>',-->
+<!--        '</g>'-->
+<!--      ].join(''),-->
+<!--    defaults: joint.util.deepSupplement({-->
+        
+<!--        type: 'basic.Table',-->
+<!--        z: 2,-->
+<!--        attrs: {-->
+<!--          '.body': {-->
+<!--            width: 0,-->
+<!--            height: 0,-->
+<!--            stroke: 'blue',-->
+<!--            fill: 'none'-->
+<!--          },-->
+<!--          '.ports > rect': {-->
+<!--            'ref-width': '33%',-->
+<!--            'ref-height': '33%',-->
+<!--            stroke: 'blue',-->
+<!--            fill: 'none'-->
+<!--          },-->
+<!--          '.port11': {-->
+<!--            'ref-x': 0,-->
+<!--            'ref-y': 0,-->
+<!--          },-->
+<!--          '.port12': {-->
+<!--            'ref-x': 0.33,-->
+<!--            'ref-y': 0,-->
+          
+<!--          },-->
+<!--          '.port13': {-->
+<!--            'ref-x': 0.66,-->
+<!--            'ref-y': 0,-->
+           
+<!--          },-->
+<!--          '.port21': {-->
+<!--            'ref-x': 0,-->
+<!--            'ref-y': 0.33,-->
+           
+    
+<!--          },-->
+<!--          '.port22': {-->
+<!--            'ref-x': 0.33,-->
+<!--            'ref-y': 0.33,-->
+           
+    
+<!--          },-->
+<!--          '.port23': {-->
+<!--            'ref-x': 0.66,-->
+<!--            'ref-y': 0.33,-->
+           
+    
+<!--          },-->
+<!--          '.port31': {-->
+<!--            'ref-x': 0,-->
+<!--            'ref-y': 0.66,-->
+           
+    
+<!--          },-->
+<!--          '.port32': {-->
+<!--            'ref-x': 0.33,-->
+<!--            'ref-y': 0.66,-->
+            
+<!--          },-->
+<!--          '.port33': {-->
+<!--            'ref-x': 0.66,-->
+<!--            'ref-y': 0.66,-->
+            
+    
+<!--          }-->
+<!--      }-->
+         
+<!--    })-->
+<!--   });-->
+<!--    //try function on model-->
+<!--    var model = new joint.shapes.basic.Table({-->
+<!--      size: {-->
+<!--        width: 100,-->
+<!--        height: 100-->
+<!--      }-->
+<!--    });-->
+    
+<!--    // graph.addCell([-->
+<!--    //   model.clone().position(400,180),-->
+<!--    //   model.clone().position(130,180)-->
+<!--    // ]);-->
+    
+    
+    
+<!--    var member = function(x, y) {-->
+<!--        var cell = new joint.shapes.devs.Atomic({-->
+<!--            position: { x: x, y: y },-->
+<!--            size: { width: 90, height: 60 },-->
+<!--            inPorts: [''],-->
+<!--            outPorts: [''],-->
+<!--            ports: {-->
+<!--            groups: {-->
+<!--                'in': {-->
+<!--                    attrs: {-->
+<!--                        '.port-body': {-->
+<!--                            fill: '#16A085'-->
+<!--                        }-->
+<!--                    }-->
+<!--                },-->
+<!--                'out': {-->
+<!--                    attrs: {-->
+<!--                        '.port-body': {-->
+<!--                            fill: '#E74C3C'-->
+<!--                        }-->
+<!--                    }-->
+<!--                }-->
+<!--            }-->
+<!--        },-->
+<!--        attrs: {-->
+<!--            '.label': { text: 'Model', 'ref-x': .5, 'ref-y': .2 },-->
+<!--            rect: { fill: '#2ECC71' }-->
+<!--        }-->
+<!--        });-->
+        
+<!--        graph.addCell(cell);-->
+<!--        return cell;-->
+<!--    };-->
+    
+ 
+<!--    // var m2 = member(100,100).attr('.label/text', 'Model 2');-->
+<!--    // graph.addCell(m2);-->
+    
+<!--    // var m3 = m2.clone().translate(300, 0).attr('.label/text', 'Model 3');-->
+<!--    // graph.addCell(m3);-->
+    
+<!--    graph.on('change:source change:target', function(link){-->
+<!--        var sourcePort = link.get('source').port;-->
+<!--        var sourceId = link.get('source').id;-->
+<!--        var targetPort = link.get('target').port;-->
+<!--        var targetId = link.get('target').id;-->
+        
+<!--        if(targetPort != null){-->
+<!--             out();-->
+<!--        }-->
+   
+<!--    });-->
+    
+<!--    function out() {-->
+<!--        graph.addCell([ model.clone().position(200,180)]);-->
+<!--    }-->
+ 
+<!--    var el1 = new joint.shapes.html.Element({-->
+<!--        position: { x: 80, y: 80 },-->
+<!--        size: { width: 170, height: 100 },-->
+<!--    });-->
+    
+<!--    graph.addCells([ el1]);-->
+    
+<!--    if($('#paper.button').length > 0){-->
+<!--         alert($('#paper.member').length);-->
+<!--    };-->
+    
+<!--    var matrix = [3];-->
+   
+<!--    for(var i=0; i<3; i++){-->
+<!--        matrix[i]=[];-->
+<!--        for(var j=0; j<3; j++){-->
+<!--            matrix[j] = new Array(3);-->
+<!--        }-->
+<!--    }-->
+<!--     //alert(matrix);-->
+<!--     var table= "#tabl";-->
+<!--    $("#tabl").pvtUi(-->
+<!--        [-->
+<!--        {color: "blue", shape: "circle"},-->
+<!--        {color: "red", shape: "triangle"}-->
+<!--        ],-->
+<!--        {-->
+<!--            rows: ["color"],-->
+<!--            cols: ["shape"]-->
+<!--        }-->
+<!--    );-->
+<!--    graph.addCells(table);-->
+  
+  
+<!--  });-->
+ 

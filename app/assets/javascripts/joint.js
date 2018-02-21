@@ -6439,13 +6439,12 @@ joint.dia.Link = joint.dia.Cell.extend({
     // The default markup for links.
     markup: [
         '<path class="connection" stroke="black" d="M 0 0 0 0"/>',
-        '<path class="marker-source" fill="black" stroke="black" d="M 0 0 0 0"/>',
-        '<path class="marker-target" fill="black" stroke="black" d="M 0 0 0 0"/>',
+        //'<path class="marker-source" fill="none" stroke="none" d="0 0 0 0"/>',
+        '<path class="marker-target" fill="purple" stroke="black" d="M 10 0 L 0 5 L 10 10 z"/>',
         '<path class="connection-wrap" d="M 0 0 0 0"/>',
-        '<g class="labels"/>',
         '<g class="marker-vertices"/>',
-        '<g class="marker-arrowheads"/>',
-        '<g class="link-tools"/>'
+            //'<g class="marker-arrowheads"/>'
+   
     ].join(''),
 
     labelMarkup: [
@@ -6948,7 +6947,7 @@ joint.dia.LinkView = joint.dia.CellView.extend({
 
         var $markerArrowheads = $(this._V.markerArrowheads.node);
 
-        $markerArrowheads.empty();
+        //$markerArrowheads.empty();
 
         // A special markup can be given in the `properties.vertexMarkup` property. This might be handy
         // if default styling (elements) are not desired. This makes it possible to use any
@@ -11270,27 +11269,14 @@ joint.shapes.org.Member = joint.dia.Element.extend({
         attrs: {
 
             rect: { width: 170, height: 60 },
-
             '.card': {
                 fill: '#FFFFFF', stroke: '#000000', 'stroke-width': 2,
                 'pointer-events': 'visiblePainted', rx: 10, ry: 10
             },
 
-            image: {
-                width: 48, height: 48,
-                ref: '.card', 'ref-x': 10, 'ref-y': 5
-            },
-
-            '.rank': {
-                'text-decoration': 'underline',
-                ref: '.card', 'ref-x': 0.9, 'ref-y': 0.2,
-                'font-family': 'Courier New', 'font-size': 14,
-                'text-anchor': 'end'
-            },
-
             '.name': {
                 'font-weight': '800',
-                ref: '.card', 'ref-x': 0.9, 'ref-y': 0.6,
+                ref: '.card', 'ref-x': 0.6, 'ref-y': 0.5,
                 'font-family': 'Courier New', 'font-size': 14,
                 'text-anchor': 'end'
             }
@@ -11302,7 +11288,8 @@ joint.shapes.org.Arrow = joint.dia.Link.extend({
 
     defaults: {
         type: 'org.Arrow',
-        source: { selector: '.card' }, target: { selector: '.card' },
+        //source: { selector: '.card' },
+        target: { selector: '.card' },
         attrs: { '.connection': { stroke: '#585858', 'stroke-width': 3 }},
         z: -1
     }
@@ -11623,11 +11610,11 @@ joint.shapes.devs.Model = joint.shapes.basic.Generic.extend(_.extend({}, joint.s
         outPorts: [],
 
         attrs: {
-            '.': { magnet: false },
-            '.body': {
-                width: 150, height: 250,
-                stroke: '#000000'
-            },
+            '.': { magnet: true },
+            // '.body': {
+            //     width: 150, height: 250,
+            //     stroke: '#000000'
+            // },
             '.port-body': {
                 r: 10,
                 magnet: true,
@@ -11636,6 +11623,12 @@ joint.shapes.devs.Model = joint.shapes.basic.Generic.extend(_.extend({}, joint.s
             text: {
                 'pointer-events': 'none'
             },
+            rect: { width: 170, height: 80 },
+            '.body': {
+                fill: '#FFFFFF', stroke: '#000000', 'stroke-width': 0,
+                'pointer-events': 'visiblePainted', rx: 80, ry: 90
+            },
+            
             '.label': { text: 'Model', 'ref-x': .5, 'ref-y': 10, ref: '.body', 'text-anchor': 'middle', fill: '#000000' },
             '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end', fill: '#000000' },
             '.outPorts .port-label':{ x: 15, dy: 4, fill: '#000000' }
@@ -11668,13 +11661,14 @@ joint.shapes.devs.Atomic = joint.shapes.devs.Model.extend({
     defaults: joint.util.deepSupplement({
 
         type: 'devs.Atomic',
-        size: { width: 80, height: 80 },
+        size: {height: 50,width: 50},
         attrs: {
-            '.body': { fill: 'salmon' },
-            '.label': { text: 'Atomic' },
+            '.body': { fill: 'purple' },
+            '.label': { text: 'Node' },
             '.inPorts .port-body': { fill: 'PaleGreen' },
             '.outPorts .port-body': { fill: 'Tomato' }
         }
+         
 
     }, joint.shapes.devs.Model.prototype.defaults)
 
@@ -12449,5 +12443,9 @@ joint.layout.DirectedGraph = {
 	joint.V = joint.Vectorizer = V;
 
 	return joint;
+	
+	joint.Table.newtable={
+	    
+	};
 
 }));

@@ -1,71 +1,459 @@
-%h1 Diagrams
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %meta{:charset => "utf-8"}/
+    %meta{:content => "width=device-width, initial-scale=1", :name => "viewport"}/
+    %title Bayesian Network Repository
+    %link{:href => "//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css", :rel => "stylesheet"}/
+    %link{:href => "/resources/demos/style.css", :rel => "stylesheet"}/
+
+    %script{:src => "https://code.jquery.com/jquery-1.12.4.js"}
+    %script{:src => "https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+    
+   
+    %title
+      = yield(:title)
+      Bayesian Network Repository
+    = csrf_meta_tags
+    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+    /[if lt IE 9]
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/r29/html5.min.js">
+      </script>
+    :css
+      ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background-color: #333;
+      }
+      li {
+        border-right: 1px solid #bbb;
+        border-left: 1px solid #bbb;
+      }
+      li {
+          float: right;
+      }
+      
+      li a {
+          display: block;
+          color: white;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+      }
+      
+      li a:hover {
+          background-color: #111;
+      }
+      
+      button {
+        float:right;
+        border-right: 1px solid #bbb;
+        border-left: 1px solid #bbb;
+        padding: 14px 16px;
+      }
+    %script{:src => "js/jquery-1.7.1.min.js", :type => "text/javascript"}
+    :css
+      table{
+      	width:50px;
+      	height:50px;
+      }
+      
+      table td{
+      	padding:10px;
+      	margin:10px;
+      	border:1px solid #ccc;
+      }
+      
+      table tr{
+        height:10px;
+      }
+      /* Modal Header */
+      .modal-header {
+        padding: 2px 16px;
+        background-color: #fefefe;
+        color: white;
+      }
+      .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1; 
+        padding-top: 100px; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgb(0,0,0); 
+        background-color: rgba(0,0,0,0.4); 
+      }
+    
+      /* Modal Content */
+      .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 10px;
+        border: 1px solid #888;
+        width: 20%;
+      }
+    
+      /* The Close Button */
+      .close {
+        color: black;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      /* Add Animation */
+      @keyframes animatetop {
+          from {top: -300px; opacity: 0}
+          to {top: 0; opacity: 1}
+      }
+    :javascript
+      function createTable(){
+        mytable = $('<table></table>').attr({ id: "basicTable", class:"table table-hover"});
+        var rows = new Number($("#rowcount").val());
+        var cols = new Number($("#columncount").val());
+        var tr = [];
+  
+        for (var i = 0; i <= rows; i++) {
+            var row = $('<tr></tr>').attr({ class: ["class1"].join(' ') }).appendTo(mytable);
+          if (i==0) {
+            for (var j = 0; j < cols; j++) {
+              $('<th></th>').text("Values").attr({class:["info"]}).appendTo(row);
+            }
+          }
+          else {
+            for (var j = 0; j < cols; j++) {
+                $('<td></td>').text("prob").appendTo(row);
+            }
+          }
+        }
+      
+        mytable.appendTo("#holdthis");
+      }
+      
+  %body{:style => "text-align:center"}
+    .container
+      = "Bayesian Network Repository"
+      %nav
+        %ul
+          %li
+            %button#myBtn Node
+          %li
+            %a Link
+          %li
+            %a Table
+          %li{:style => "float:left"}
+            %a.active Save
+    #box
+    Row Count:
+    %input#rowcount{:type => "text"}/
+    Column Count:
+    %input#columncount{:type => "text"}/
+    %input{:onclick => "createTable();", :type => "button", :value => "Create Table"}/
+    
+  
+    #myModal.modal
+      / Modal content
+      .modal-content
+        .modal-header
+        %span.close ×
+        %h2 Node 1
+        %p#holdthis
+        
+    :javascript
+      // Get the modal
+      var modal = document.getElementById('myModal');
+      
+      // Get the button that opens the modal
+      var btn = document.getElementById("myBtn");
+      
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+      
+      // When the user clicks the button, open the modal 
+      btn.onclick = function() {
+          modal.style.display = "block";
+      }
+      
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+          modal.style.display = "none";
+      }
+      
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+          if (event.target == modal) {
+              modal.style.display = "none";
+          }
+      }
+
+      
 #paper
 
 :javascript
   $(function() {
+   
     var graph = new joint.dia.Graph();
 
     var paper = new joint.dia.Paper({
         el: $('#paper'),
-        width: 800,
-        height: 600,
+        width: 1460,
+        height: 568,
         gridSize: 1,
         model: graph,
         perpendicularLinks: true,
-        restrictTranslate: true
-    });
-
-    var member = function(x, y, rank, name, image, background, textColor) {
-
-        textColor = textColor || "#000";
-
-        var cell = new joint.shapes.org.Member({
-            position: { x: x, y: y },
-            attrs: {
-                '.card': { fill: background, stroke: 'none'},
-                  image: { 'xlink:href': '/images/demos/orgchart/'+ image, opacity: 0.7 },
-                '.rank': { text: rank, fill: textColor, 'word-spacing': '-5px', 'letter-spacing': 0},
-                '.name': { text: name, fill: textColor, 'font-size': 13, 'font-family': 'Arial', 'letter-spacing': 0 }
+        restrictTranslate: true,
+        snapLinks: true,
+        linkPinning: false,
+        embeddingMode: true,
+        highlighting: {
+            'default': {
+                name: 'stroke',
+                options: {
+                    padding: 6
+                }
+            },
+            'embedding': {
+                name: 'addClass',
+                options: {
+                    className: 'highlighted-parent'
+                }
             }
+        },
+    
+        validateEmbedding: function(childView, parentView) {
+    
+            return parentView.model instanceof joint.shapes.devs.Coupled;
+        },
+    
+        validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {
+    
+            return sourceMagnet != targetMagnet;
+        }
+    });
+    
+    
+    joint.shapes.html={};
+    joint.shapes.html.Element = joint.shapes.basic.Rect.extend({
+        defaults: joint.util.deepSupplement({
+            type: 'html.Element',
+            attrs: {
+                rect: { stroke: 'none', 'fill-opacity': 0 }
+            }
+        }, joint.shapes.basic.Rect.prototype.defaults)
+    });
+    
+    joint.shapes.html.ElementView = joint.dia.ElementView.extend({
+
+        template: [
+            '<div class="html-element">',
+            '<button class="button">Node</button>',
+            '</div>'
+        ].join(''),
+
+        initialize: function() {
+            _.bindAll(this, 'updateBox');
+            joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+            this.$box = $(_.template(this.template)());
+            this.$box.find('.button').on('click', this.addNode);
+            this.updateBox();
+        },
+        render: function() {
+            joint.dia.ElementView.prototype.render.apply(this, arguments);
+            this.paper.$el.prepend(this.$box);
+            this.updateBox();
+            return this;
+        },
+        updateBox: function() {
+            // Set the position and dimension of the box so that it covers the JointJS element.
+            var bbox = this.model.getBBox();
+            this.$box.css({
+                width: bbox.width,
+                height: bbox.height,
+                left: bbox.x,
+                top: bbox.y,
+                transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)'
+            });
+        },
+        addNode: function(){
+           var node = member(100,50).attr('.label/text', 'New Model');
+           var newtable= model.clone().position(130,150);
+           
+           graph.addCells([node, newtable])
+           node.embed(newtable);
+        }
+    });
+    
+   joint.shapes.basic.Table = joint.shapes.basic.Generic.extend({
+       markup: [
+        '<g class="rotatable"><g class="scalable"><rect class="body"/></g>',
+        '<g class="ports">',
+        '<rect class="port12" port="12"/><rect class="port13" port="13"/>',
+        
+        '</g>',
+        '</g>'
+      ].join(''),
+    defaults: joint.util.deepSupplement({
+        
+        type: 'basic.Table',
+        z: 2,
+        attrs: {
+          '.body': {
+            width: 0,
+            height: 0,
+            stroke: 'blue',
+            fill: 'none'
+          },
+          '.ports > rect': {
+            'ref-width': '33%',
+            'ref-height': '33%',
+            stroke: 'blue',
+            fill: 'none'
+          },
+          '.port11': {
+            'ref-x': 0,
+            'ref-y': 0,
+          },
+          '.port12': {
+            'ref-x': 0.33,
+            'ref-y': 0,
+          
+          },
+          '.port13': {
+            'ref-x': 0.66,
+            'ref-y': 0,
+           
+          },
+          '.port21': {
+            'ref-x': 0,
+            'ref-y': 0.33,
+           
+    
+          },
+          '.port22': {
+            'ref-x': 0.33,
+            'ref-y': 0.33,
+           
+    
+          },
+          '.port23': {
+            'ref-x': 0.66,
+            'ref-y': 0.33,
+           
+    
+          },
+          '.port31': {
+            'ref-x': 0,
+            'ref-y': 0.66,
+           
+    
+          },
+          '.port32': {
+            'ref-x': 0.33,
+            'ref-y': 0.66,
+            
+          },
+          '.port33': {
+            'ref-x': 0.66,
+            'ref-y': 0.66,
+            
+    
+          }
+      }
+         
+    })
+   });
+   
+    //try function on model
+    var model = new joint.shapes.basic.Table({
+      size: {
+        width: 100,
+        height: 100
+      }
+    });
+    
+    // graph.addCell([
+    //   model.clone().position(400,180),
+    //   model.clone().position(130,180)
+    // ]);
+    
+    
+    var member = function(x, y) {
+        var cell = new joint.shapes.devs.Atomic({
+            position: { x: x, y: y },
+            size: { width: 100, height: 70},
+            inPorts: [''],
+            outPorts: [''],
+            ports: {
+            groups: {
+                'in': {
+                    attrs: {
+                        '.port-body': {
+                            fill: '#16A085'
+                        }
+                    }
+                },
+                'out': {
+                    attrs: {
+                        '.port-body': {
+                            fill: '#E74C3C'
+                        }
+                    }
+                }
+            }
+        },
+        attrs: {
+            '.label': { text: 'Model', 'ref-x': .5, 'ref-y': .2 },
+            rect: { fill: '#2ECC71' }
+        }
         });
+        
         graph.addCell(cell);
         return cell;
     };
-
-    function link(source, target, breakpoints) {
-
-        var cell = new joint.shapes.org.Arrow({
-            source: { id: source.id },
-            target: { id: target.id },
-            vertices: breakpoints,
-            attrs: {
-                '.connection': {
-                    'fill': 'none',
-                    'stroke-linejoin': 'round',
-                    'stroke-width': '2',
-                    'stroke': '#4b4a67'
-                }
-            }
-
-        });
-        graph.addCell(cell);
-        return cell;
+    
+ 
+    // var m2 = member(100,100).attr('.label/text', 'Model 2');
+    // graph.addCell(m2);
+    
+    // var m3 = m2.clone().translate(300, 0).attr('.label/text', 'Model 3');
+    // graph.addCell(m3);
+    
+    graph.on('change:source change:target', function(link){
+        var sourcePort = link.get('source').port;
+        var sourceId = link.get('source').id;
+        var targetPort = link.get('target').port;
+        var targetId = link.get('target').id;
+        
+        if(targetPort != null){
+             out();
+        }
+   
+    });
+    
+    function out() {
+  
     }
+ 
+    var el1 = new joint.shapes.html.Element({
+        position: { x: 80, y: 80 },
+        size: { width: 170, height: 100 },
+    });
+    
+    graph.addCells([ el1]);
+    
 
-    var bart = member(300,70,'CEO', 'Bart Simpson', 'male.png', '#30d0c6');
-    var homer = member(90,200,'VP Marketing', 'Homer Simpson', 'male.png', '#7c68fd', '#f1f1f1');
-    var marge = member(300,200,'VP Sales', 'Marge Simpson', 'female.png', '#7c68fd', '#f1f1f1');
-    var lisa = member(500,200,'VP Production' , 'Lisa Simpson', 'female.png', '#7c68fd', '#f1f1f1');
-    var maggie = member(400,350,'Manager', 'Maggie Simpson', 'female.png', '#feb563');
-    var lenny = member(190,350,'Manager', 'Lenny Leonard', 'male.png', '#feb563');
-    var carl = member(190,500,'Manager', 'Carl Carlson', 'male.png', '#feb563');
-
-
-
-    link(bart, marge, [{x: 385, y: 180}]);
-    link(bart, homer, [{x: 385, y: 180}, {x: 175, y: 180}]);
-    link(bart, lisa, [{x: 385, y: 180}, {x: 585, y: 180}]);
-    link(homer, lenny, [{x:175 , y: 380}]);
-    link(homer, carl, [{x:175 , y: 530}]);
-    link(marge, maggie, [{x:385 , y: 380}]);
   });
+ 

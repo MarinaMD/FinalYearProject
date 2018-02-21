@@ -16,7 +16,8 @@ http://www.w3.org/TR/SVG/styling.html
 
 Important note: Presentation attributes have a lower precedence over CSS style rules.
 */
-
+@import "bootstrap-sprockets";
+@import "bootstrap";
 
 /* .viewport is a <g> node wrapping all diagram elements in the paper */
 .viewport {
@@ -37,7 +38,7 @@ path:not([d]) {
 */
 
 /* .magnet is an element that can be either source or a target of a link */
-/*
+
 .magnet {
    fill: black;
    fill-opacity: 0;
@@ -52,7 +53,7 @@ path:not([d]) {
 .magnet:hover {
    stroke-opacity: .5;
 }
-*/
+
 
 [magnet=true]:not(.element) {
    cursor: crosshair;
@@ -100,14 +101,16 @@ very thin.
    opacity: 0;
    cursor: move;
 }
-.connection-wrap:hover {
-   opacity: .4;
-   stroke-opacity: .4;
-}
+/*adds hover colour on link line*/
+
+/*.connection-wrap:hover {*/
+/*   opacity: .4;*/
+/*   stroke-opacity: .4;*/
+/*}*/
 
 
-.connection {
-   /* stroke: black; */
+.connection{
+    stroke: black; 
    /* stroke width cannot be overriden by attribute? */
    /*   stroke-width: 1; */
    fill: none;
@@ -154,9 +157,10 @@ Vertex markers are `<circle>` elements that appear at connection vertex position
 .link-tools .tool-remove path {
    fill: white;
 }
-.link:hover .marker-vertices,
-.link:hover .marker-arrowheads,
-.link:hover .link-tools {
+
+/*.link:hover .marker-arrowheads,*/
+/*.link:hover .link-tools,*/
+.link:hover .marker-vertices{
    opacity: 1;
 }
 
@@ -172,10 +176,10 @@ Vertex markers are `<circle>` elements that appear at connection vertex position
 .marker-arrowhead {
    fill: #1ABC9C;
 }
-.marker-arrowhead:hover {
-   fill: #F39C12;
-   stroke: none;
-}
+/*.marker-arrowhead:hover {*/
+/*   fill: #F39C12;*/
+/*   stroke: none;*/
+/*}*/
 
 /* <circle> element used to remove a vertex */
 .marker-vertex-remove {
@@ -238,3 +242,17 @@ Do not allow adding new vertices: .connection-wrap { pointer-events: none; }
     display: table-cell;
     padding: 0px 5px 0px 5px;
 }
+
+/*table style*/
+.table{
+   width:50px;
+   height:50px;
+    	}
+.table td{
+ 	padding:10px;
+ 	margin:10px;
+ 	border:1px solid #ccc;
+ }
+.table tr{
+   height:10px;
+ }
