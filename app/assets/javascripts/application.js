@@ -15,5 +15,9 @@
 //= require turbolinks
 //= require lodash.min.js
 //= require backbone-min.js
+//= require rappid.min.js
+//= require prob-table.js
+//= require adj-matrix.js
+//= require joint.dia.command.min.js
 //= require joint
 //= require_tree .
