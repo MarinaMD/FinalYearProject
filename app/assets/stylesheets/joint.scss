@@ -276,6 +276,7 @@ Do not allow adding new vertices: .connection-wrap { pointer-events: none; }
   overflow: auto; 
   background-color: rgb(0,0,0); 
   background-color: rgba(0,0,0,0.4); 
+
 }
 
 /* Modal Content */
@@ -284,7 +285,7 @@ Do not allow adding new vertices: .connection-wrap { pointer-events: none; }
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 20%;
+  width: fit-content;
 }
 
 /* The Close Button */

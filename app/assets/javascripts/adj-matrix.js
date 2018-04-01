@@ -3,6 +3,7 @@ var matrix = [];
 var p = [];
 var parentList =[];
 var childList= [];
+
 function makeMatrix(x){
 
     for(var i=0; i < x; i++) {
@@ -14,7 +15,6 @@ function makeMatrix(x){
          
         }
     }
-    //alert(matrix);
 }
 
 function makeP(x){
@@ -26,10 +26,12 @@ function makeP(x){
        }
    }
 }
+
 function getP(x){
     var numbOfParents = p[x-1];
     return numbOfParents;
 }
+
 function getParentNames(x){
     var l = p.length;
     var parentName=[];
@@ -47,18 +49,6 @@ function getParentNames(x){
     return parentName;
 }
 
-// function getNames(x){
-//   var array = x;
-//   var box = document.getElementById("parent");
-//   for (var j = 1; j < array.length; j++) {
-//       var name = array[j];
-//       var cell = document.getElementById("node"+ name);
-//       var label = cell.attr(".label/text");
-//       var text = document.createTextNode(label);
-//       box.appendChild(text);
-//   }
-// }
-
 function addEdges(x,y){
     
     matrix[x-1][y-1] = 1;
@@ -66,41 +56,45 @@ function addEdges(x,y){
 }
 
 function pushEdges(x,y){
+    
     parentList.push(x);
     childList.push(y);
 }
 
 function getMatrix(counter){
+    
     makeMatrix(counter);
     currentEdges(childList.length);
 
 }
 
 function alertStuff(){
+    
     alert(matrix);
     alert(p);
 }
 
 function currentEdges(x){
+    
     for(var i=0; i < x; i++) {
-          var parent = parentList[i];
-          var child = childList[i];
-          addEdges(parent,child);
+        var parent = parentList[i];
+        var child = childList[i];
+        addEdges(parent,child);
    }
 }
-function deleteLink(x,y){
 
-var parentLength = parentList.length;
-var childLength = childList.length;
-for (var i = 0; i < parentLength; i++) {
-    if (parentList[i] == x ){
-        for (var j = 0; j < childLength; j++){
-            if (childList[j] == y){
-                parentList.remove(i);
-                childList.remove(j);
-            }
-        }
-    }
-   
-}
-}
+// function deleteLink(x,y){
+    
+//     var parentLength = parentList.length;
+//     var childLength = childList.length;
+//     for (var i = 0; i < parentLength; i++) {
+//         if (parentList[i] == x ){
+//             for (var j = 0; j < childLength; j++){
+//                 if (childList[j] == y){
+//                     parentList.remove(i);
+//                     childList.remove(j);
+//                 }
+//             }
+//         }
+//     }
+// }

@@ -17,6 +17,7 @@
     <script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
     <script src='js/jquery-1.7.1.min.js' type='text/javascript'></script>
     <script src="joint.dia.command.min.js"></script>
+    <script src="jquery.json-2.4.min.js"></script>
     <title>
       Bayesian Network Repository
     </title>
@@ -71,243 +72,256 @@
     </div>
   
     <script>
-      // Get the modal
-      var modal = document.getElementById('myModal');
-      var contents = document.getElementById('nodeContent');
-      var rename = document.getElementById('rename');
-      
-      rename.onclick = function(){
-        var node = document.getElementById("node"+ counter);
-        node.attr(".label/text", "poop");
-      };
-      // Get the button that opens the modal
-      var btn = document.getElementById("tblBtn");
+    
+
+    
+    
+    // Get the modal
+    var modal = document.getElementById('myModal');
+    var contents = document.getElementById('nodeContent');
+    var rename = document.getElementById('rename');
+    
+    rename.onclick = function(){
+      var node = document.getElementById("node"+ counter);
+      node.attr(".label/text", "poop");
+    };
+    // Get the button that opens the modal
+    var btn = document.getElementById("tblBtn");
          
       
-      // Get the <span> element that closes the modal
-      var span = document.getElementsByClassName("close")[0];
-      
-      // When the user clicks the button, open the modal 
-      btn.onclick = function() {
-        alertStuff();
-      }
-      
-      // When the user clicks on <span> (x), close the modal
-      span.onclick = function() {
-          modal.style.display = "none";
-          $( "#myTable" ).empty();
-          $("#nName").empty();
-        
-      }
-      
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function(event) {
-          if (event.target == modal) {
-              modal.style.display = "none";
-              $( "#myTable" ).empty();
-              $("#nName").empty();
-          }
-        
-      }
-
-    </script>
-    <div id='paper'></div>
-    <script>
-      $(function() {
-       
-        var graph = new joint.dia.Graph();
-      
-        var paper = new joint.dia.Paper({
-            el: $('#paper'),
-            width: 1460,
-            height: 568,
-            gridSize: 1,
-            model: graph,
-            perpendicularLinks: true,
-            restrictTranslate: true,
-            snapLinks: true,
-            linkPinning: false,
-            embeddingMode: true,
-            highlighting: {
-              'default': {
-                  name: 'stroke',
-                  options: {
-                      padding: 6
-                  }
-              },
-              'embedding': {
-                  name: 'addClass',
-                  options: {
-                      className: 'highlighted-parent'
-                  }
-              }
-            },
-        
-            validateEmbedding: function(childView, parentView) {
-        
-                return parentView.model instanceof joint.shapes.devs.Coupled;
-            },
-        
-            validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {
-        
-                return sourceMagnet != targetMagnet && sourceView != targetView;
-            },
-        });
-
-        var member = function(x, y) {
-          var cell = new joint.shapes.devs.Atomic({
-            position: { x: x, y: y },
-            size: { width: 100, height: 70},
-            attrs: {
-              '.label': { text: 'Model', 'ref-x': .5, 'ref-y': .2},
-              rect: { fill: '#2ECC71', magnet:'passive'  },
-              'id':{text: counter}
-            }
-          });
-          graph.addCell(cell);
-          return cell;
-        };
-        
-
-        
-    paper.on({ 'element:pointerdown': onElementClick });
-    var clickTimerId;
-    function onElementClick(view) {
-      if (clickTimerId) {
-      // double click 
-      window.clearTimeout(clickTimerId); 
-      clickTimerId = null;
-      onElementDblClick(view); }
-      else {
-        // single click
-        clickTimerId = window.setTimeout(click, 200);
-        }
-        function click() {
-          clickTimerId = null; 
-          }
-        }
-        
-        //double click function for getting cell Ids
-        function onElementDblClick(view) {
-            var id = view.model.id;
-            var cell = graph.getCell(id);
-            var label = cell.attr("id/text");
-            var name = cell.attr(".label/text");
-            var box = document.getElementById("nName");
-            var cellName = document.createTextNode(name);
-            if (cell instanceof joint.shapes.devs.Atomic){
-              var nmbParents = getP(label);
-              getParentNames(label);
-              //getNames(getParentNames(label));
-              
-              box.appendChild(cellName);
-              
-              generate_table(nmbParents);
-              modal.style.display = "inline";
-            }
-        } 
-  
-        //right-click function on nodes
-        paper.$el.on('contextmenu', function(evt){
-          evt.stopPropagation();
-          evt.preventDefault();
-          
-              var cellView = paper.findView(evt.target);
-              
-              
-              if (cellView instanceof joint.dia.LinkView){
-                cellView.remove();
-                // deleteLink(1,2);
-                // getMatrix(counter);
-              }
-              else if(cellView instanceof joint.dia.CellView){
-                modal.style.display = "inline";
-                // var id = cellView.id;
-                // var child = graph.getCell(id);
-                // var name = child.attr(".label/text");
-                // var box = document.getElementById("nName");
-                // var childName = document.createTextNode(name);
-                // box.appendChild(childName);
-               
-              }
-        });
-        
-        
-        
-        graph.on('change:source change:target', function(link, cell){
-            
-            var sourceId = link.get('source').id;
-            
-            var targetId = link.get('target').id;
-            
-            
-            if(link.get('source').id && link.get('target').id){
-              var parent = graph.getCell(sourceId);
-              var child = graph.getCell(targetId);
-             
-             
-              var pId = parent.attr("id/text");
-              var cId = child.attr("id/text");
-              // var child = node.attr("children/text");
-              // alert(child)
-              
-              addEdges(pId,cId);
-              pushEdges(pId, cId);
-              makeP(counter);
-            };
-        });
-      
-     
-        //counters
-        var counter = 0;
-
-        function add() {
-            counter += 1;
-           getMatrix(counter);
-           makeP(counter);
-        }
-        
-        var nodeTest = document.getElementById("myBtn");
-        
-        nodeTest.onclick = function(){
-          add();
-          var node = member(100,50).attr('.label/text', 'Node '+ counter);
-          graph.addCell(node);
-        };
-        
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
     
-        
-        
-        
-        
-        var linktest = document.getElementById("linkBtn");
-        
-        linktest.onclick = function(){
-           
-          
-          var elementBelow = graph.get('cells').find(function(cell) {
-          
-            if (cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'passive') {
-                cell.attr('rect/magnet', 'true');
-                 $("#myBtn").css("pointer-events", "none");
-                 $("#linkBtn").css("color", "#FF1493");
-                 $("#myBtn").css("color", "gray");
+    // When the user clicks the button, open the modal 
+    btn.onclick = function(sText) {
+      
+      //alertStuff();
+      getCell(currentLabel);
+      //alert(prob);
+      //localStorage.clear();
+
+    }
+      
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+        setCell(currentLabel,currentParentNumber);
+        $( "#myTable" ).empty();
+        $("#nName").empty();
+      
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            setCell(currentLabel,currentParentNumber);
+            $( "#myTable" ).empty();
+            $("#nName").empty();
+            //alert(currentParentNumber);
+        }
+      
+    }
+    var currentParentNumber;
+    var currentLabel;
+   
+    </script>
+    
+    <div id='paper'></div>
+    
+    <script>
+    $(function() {
+     
+      var graph = new joint.dia.Graph();
+    
+      var paper = new joint.dia.Paper({
+          el: $('#paper'),
+          width: 1460,
+          height: 568,
+          gridSize: 1,
+          model: graph,
+          perpendicularLinks: true,
+          restrictTranslate: true,
+          snapLinks: true,
+          linkPinning: false,
+          embeddingMode: true,
+          highlighting: {
+            'default': {
+                name: 'stroke',
+                options: {
+                    padding: 6
+                }
+            },
+            'embedding': {
+                name: 'addClass',
+                options: {
+                    className: 'highlighted-parent'
+                }
             }
-            else if(cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'true'){
-                 cell.attr('rect/magnet', 'passive');
-                  $("#myBtn").css("pointer-events", "auto");
-                  $("#linkBtn").css("color", "black");
-                  $("#myBtn").css("color", "black");
-            }
-          });
-        };
-        
-        //var tableProb = new probTable();
-        // probTable.childName = "Node " + counter;
-        // document.getElementById("nodeName").innerHTML = probTable.getChildName();
-        
+          },
+      
+          validateEmbedding: function(childView, parentView) {
+      
+              return parentView.model instanceof joint.shapes.devs.Coupled;
+          },
+      
+          validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {
+      
+              return sourceMagnet != targetMagnet && sourceView != targetView;
+          },
       });
 
+      var member = function(x, y) {
+        var cell = new joint.shapes.devs.Atomic({
+          position: { x: x, y: y },
+          size: { width: 100, height: 70},
+          attrs: {
+            '.label': { text: 'Model', 'ref-x': .5, 'ref-y': .2},
+            rect: { fill: '#2ECC71', magnet:'passive'  },
+            'id':{text: counter}
+          }
+        });
+        graph.addCell(cell);
+        return cell;
+      };
+      
+
+      
+      paper.on({ 'element:pointerdown': onElementClick });
+      var clickTimerId;
+      
+      function onElementClick(view) {
+        if (clickTimerId) {
+        // double click 
+        window.clearTimeout(clickTimerId); 
+        clickTimerId = null;
+        onElementDblClick(view);
+        }
+        
+        else {
+          // single click
+          clickTimerId = window.setTimeout(click, 200);
+        }
+        
+        function click() {
+            clickTimerId = null; 
+        }
+      }
+
+      //double click function for getting cell Ids
+      function onElementDblClick(view) {
+        var id = view.model.id;
+        var cell = graph.getCell(id);
+        var label = cell.attr("id/text");
+        var name = cell.attr(".label/text");
+        var box = document.getElementById("nName");
+        var cellName = document.createTextNode(name);
+        
+        if (cell instanceof joint.shapes.devs.Atomic){
+          var nmbParents = getP(label);
+          currentParentNumber = nmbParents;
+          currentLabel = label;
+          getParentNames(label);
+          
+          
+          box.appendChild(cellName);
+          
+          generate_table(label,nmbParents);
+          modal.style.display = "inline";
+        }
+      } 
+
+
+      //right-click function on nodes
+      paper.$el.on('contextmenu', function(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+        
+        var cellView = paper.findView(evt.target);
+        var id = cellView.model.id;
+        var cell = graph.getCell(id);
+        var name = cell.attr(".label/text");
+        
+        if (cellView instanceof joint.dia.LinkView){
+          cellView.remove();
+          // deleteLink(1,2);
+          // getMatrix(counter);
+        }
+        
+        else if(cell instanceof joint.shapes.devs.Atomic){
+          var box = document.createElement("td");
+          var boxText = document.createTextNode(name);
+          var t = document.getElementById("myTable");
+          box.contentEditable = "true";
+          box.appendChild(boxText);
+          t.appendChild(box);
+          modal.style.display = "inline";
+        }
+      });
+      
+      
+      
+      graph.on('change:source change:target', function(link, cell){
+          
+        var sourceId = link.get('source').id;
+          
+        var targetId = link.get('target').id;
+          
+          
+        if(link.get('source').id && link.get('target').id){
+          var parent = graph.getCell(sourceId);
+          var child = graph.getCell(targetId);
+         
+         
+          var pId = parent.attr("id/text");
+          var cId = child.attr("id/text");
+          // var child = node.attr("children/text");
+          // alert(child)
+          
+          addEdges(pId,cId);
+          pushEdges(pId, cId);
+          makeP(counter);
+        };
+      });
+    
+      //counters
+      var counter = 0;
+
+      function add() {
+          counter += 1;
+         getMatrix(counter);
+         makeP(counter);
+      }
+      
+      var nodeTest = document.getElementById("myBtn");
+      
+      nodeTest.onclick = function(){
+        add();
+        var node = member(100,50).attr('.label/text', 'Node '+ counter);
+        graph.addCell(node);
+      };
+
+      var linktest = document.getElementById("linkBtn");
+      
+      linktest.onclick = function(){
+
+        var elementBelow = graph.get('cells').find(function(cell) {
+        
+          if (cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'passive') {
+            cell.attr('rect/magnet', 'true');
+            $("#myBtn").css("pointer-events", "none");
+            $("#linkBtn").css("color", "#FF1493");
+            $("#myBtn").css("color", "gray");
+          }
+          else if(cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'true'){
+            cell.attr('rect/magnet', 'passive');
+            $("#myBtn").css("pointer-events", "auto");
+            $("#linkBtn").css("color", "black");
+            $("#myBtn").css("color", "black");
+          }
+        });
+      };
+    });
     </script>
   </body>
 </html>
