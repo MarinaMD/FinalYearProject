@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<!--The main view of the project. This is where the GUI is generated and the jointJs and jsbayes APIs are used to create the functionality of the graph -->
+<html lang='en'>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <meta charset='utf-8'>
+    <meta content='width=device-width, initial-scale=1' name='viewport'>
+    <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
+    <script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
+    <script type="text/javascript" src="jsbayes.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>
+      Bayesian Network Repository
+    </title>
+  </head>
+  
+  <body style='text-align:center'>
+    <!--The toolbar containing the node button, link button. undo button and save button  -->
+    <!--Each button contains a class adding the FontAwesome icons -->
+    <div class='container'>
+      <nav>
+        <ul>
+          <li>
+            <button id='myBtn'><i class="fa fa-circle-o fa-lg"></i></button>
+          </li>
+          <li>
+            <button id='linkBtn'><i class="fa fa-expand fa-lg"></i></button>
+          </li>
+          <li>
+            <button id='undoBtn'><i class= "fa fa-undo fa-lg"></i></button>
+          </li>
+          <li style='float:left'>
+            <button id = 'save' class='active'><i class= "fa fa-save fa0lg"></i></button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+   <!-- The modal is the pop-up window that will contain the conditional probabilty table-->
+    <div class='modal' id='myModal'>
+      <!-- Modal content -->
+      <div class='modal-content'>
+        <div id= "nName">
+        </div>
+        <span class='close'>&times;</span>
+        <!-- Table content -->
+        <div id="table" class="table-editable">
+          <table id= "myTable" class="table">
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- A second modal that would hold the node details, such as renaming the node or adding states-->
+      <div class='modal' id='nodeContent'>
+      <!-- Modal content -->
+      <div class='modal-content'>
+      <span class='close'>&times;</span>
+        <!-- Node details content -->
+        <div id="content" >
+             <button type="button" id= "rename">Rename</button>
+        </div>
+      </div>
+    </div>
+  
+    <script>
+    
+    // Get the modal that will hold the table
+    var modal = document.getElementById('myModal');
+    var contents = document.getElementById('nodeContent');
+    var rename = document.getElementById('rename');
+    
+    //when the rename button is clicked, the label of the node will change
+    rename.onclick = function(){
+      var node = document.getElementById("node"+ counter);
+      node.attr(".label/text", "rename");
+    };
+    
+    // Get the undo button and save button
+    var btn = document.getElementById("undoBtn");
+    var save = document.getElementById("save");
+      
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+        //setCell will go through the table and find the probability values in the table
+        //then any element in the modal is erased to make room for the next table generation
+        setCell(currentLabel,currentParentNumber);
+        $("#myTable" ).empty();
+        $("#nName").empty();
+
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            //setCell will go through the table and find the probability values in the table
+            //then any element in the modal is erased to make room for the next table generation
+            setCell(currentLabel,currentParentNumber);
+            $( "#myTable" ).empty();
+            $("#nName").empty();
+        }
+      
+    }
+    //currentParentNumber and currentLable hold the values of
+    //the last name and number of parents the last node clicked has
+    var currentParentNumber;
+    var currentLabel;
+   
+    </script>
+    
+    <script>
+     //the JavaScript code from jsbayes that defines the Bayesian inference of a graph
+      var g = jsbayes.newGraph();
+      
+      //adding nodes and their states to the graph
+      var n1 = g.addNode('n1', ['true', 'false']);
+      var n2 = g.addNode('n2', ['true', 'false']);
+      var n3 = g.addNode('n3', ['true', 'false']);
+      
+      //adding node 2 as a parent for node 1
+      n1.addParent(n2);
+      
+      //adding node 1 and 2 as parents for node 3
+      n3.addParent(n1)
+      .addParent(n2);
+      
+      //defining the conditional probability table(cpt) of each node
+      //each cpt is defined as a 2D array
+      n1.cpt = [ 
+       [0.01, 0.99], //[ P(n1=true|n2=true), P(n1=false|n2=true) ]
+       [0.4, 0.6]  //[ P(n1=true|n2=false), P(n1=false|n2=false) ]
+      ];
+      
+      n2.cpt = [0.2, 0.8]; //[ P(n2=true)  P(n2=false) 
+      
+      n3.setCpt([
+       [ 0.99, 0.01 ],
+       [ 0.9, 0.1 ],
+       [ 0.8, 0.2 ],
+       [ 0, 1 ]
+      ]);
+      
+      //programatically marking node 3 as observed 
+      g.observe('n3', 'true');
+      g.sample(1000);
+      
+      g.reinit() //initialize node
+      .then(function(r) { 
+       return sample(1000); //likelihood weight sampling aka the inference
+      });
+      
+      
+      g.saveSamples = true;
+      g.sample(1000);
+      
+    </script>
+    <!-- The canvas that holds the graph-->
+    <div id='paper'></div>
+    
+    <script>
+    $(function() {
+     
+      var graph = new joint.dia.Graph();
+      //defining the name and attributes of the canvas
+      var paper = new joint.dia.Paper({
+          el: $('#paper'),
+          width: 1500,
+          height: 650,
+          gridSize: 1,
+          model: graph,
+          perpendicularLinks: true,
+          restrictTranslate: true,
+          snapLinks: true,
+          linkPinning: false,
+          embeddingMode: true,
+          highlighting: {
+            'default': {
+                name: 'stroke',
+                options: {
+                    padding: 6
+                }
+            },
+            'embedding': {
+                name: 'addClass',
+                options: {
+                    className: 'highlighted-parent'
+                }
+            }
+          },
+          //this function does not allow links to be made from the same source
+          validateConnection: function(sourceView, sourceMagnet, targetView, targetMagnet) {
+      
+              return sourceMagnet != targetMagnet && sourceView != targetView;
+          },
+      });
+      //member variable contains all the attributes for the node for the graph
+      //it has a magnet, which allows links to be made to and from the node
+      //it also holds an attribute id which changes based on the number of nodes
+      //currenly on the graph
+      var member = function(x, y) {
+        var cell = new joint.shapes.devs.Atomic({
+          position: { x: x, y: y },
+          size: { width: 100, height: 70},
+          attrs: {
+            '.label': { text: 'Model', 'ref-x': .5, 'ref-y': .2},
+            rect: { fill: '#2ECC71', magnet:'passive'  },
+            'id':{text: counter}
+          }
+        });
+        graph.addCell(cell);
+        return cell;
+      };
+      
+
+      //a custom made onDoubleClick element
+      //clkTimer is used to help the program seperate a click from a double click
+      paper.on({ 'element:pointerdown': onElementClick });
+      var clkTimerId;
+      
+      function onElementClick(view) {
+        if (clkTimerId) {
+        // double click 
+        window.clearTimeout(clkTimerId); 
+        clkTimerId = null;
+        onElementDblClick(view);
+        }
+        
+        else {
+          // single click
+          clkTimerId = window.setTimeout(click, 200);
+        }
+        
+        function click() {
+            clkTimerId = null; 
+        }
+      }
+
+      //double click function for getting cell Ids
+      function onElementDblClick(view) {
+        var id = view.model.id;
+        var cell = graph.getCell(id);
+        var label = cell.attr("id/text");
+        var name = cell.attr(".label/text");
+        var box = document.getElementById("nName");
+        var cellName = document.createTextNode(name);
+        //if the element clicked is a node, then the number of parents for the
+        //node and its name are initialized in currentParentNumber and currentLabel
+        //These values are needed so that they are added as values for the generate_table function
+        //then the modal displayed with the table for the node inside
+        if (cell instanceof joint.shapes.devs.Atomic){
+          var nmbParents = getP(label);
+          currentParentNumber = nmbParents;
+          currentLabel = label;
+          getParentNames(label);
+          
+          
+          box.appendChild(cellName);
+          
+          generate_table(label,nmbParents);
+          modal.style.display = "inline";
+        }
+      } 
+
+
+      //right-click function on nodes
+      paper.$el.on('contextmenu', function(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+        
+        var cellView = paper.findView(evt.target);
+        var id = cellView.model.id;
+        var cell = graph.getCell(id);
+        var name = cell.attr(".label/text");
+        //if the element that was clicked is a link
+        //it deletes it
+        if (cellView instanceof joint.dia.LinkView){
+          cellView.remove();
+        }
+        //if the element is a node, open the node details modal
+        else if(cell instanceof joint.shapes.devs.Atomic){
+          var box = document.createElement("td");
+          var boxText = document.createTextNode(name);
+          var t = document.getElementById("myTable");
+          box.contentEditable = "true";
+          box.appendChild(boxText);
+          t.appendChild(box);
+          modal.style.display = "inline";
+        }
+      });
+      
+      
+      //when a link is being made, the event change:source and change:target
+      //are called. When the link is set on a target and the link is established,
+      //the source and target ids are retrieved and used to find the name of the 
+      //nodes that were linked. Then this information is passed to the adjacency matrix
+      //via the functions addEdges() and pushEdges()
+      graph.on('change:source change:target', function(link, cell){
+          
+        var sourceId = link.get('source').id;
+          
+        var targetId = link.get('target').id;
+          
+          
+        if(link.get('source').id && link.get('target').id && 'element:pointerup'){
+          var parent = graph.getCell(sourceId);
+          var child = graph.getCell(targetId);
+         
+         
+          var pId = parent.attr("id/text");
+          var cId = child.attr("id/text");
+
+          //addEdges updates the matrix values according to the parent-child link
+          //that was made
+          addEdges(pId,cId);
+          //pushEdges pushes the names of the nodes to their respective arrays in
+          //the adjacency matrix file
+          pushEdges(pId, cId);
+          //makeP updates the P array which keeps track of the number of parents
+          //each node has
+          makeP(counter);
+        };
+      });
+    
+      //number of nodes on the graph
+      var counter = 0;
+      //increments the counter whenever a node is added
+      //updates the adjacency matrix and P array
+      function add() {
+        counter += 1;
+        getMatrix(counter);
+        makeP(counter);
+      }
+      
+      //connects to the node button in the toolbar
+      var nodeCreate = document.getElementById("myBtn");
+      
+      //creates a new member element named node and then adds it to the graph
+      nodeCreate.onclick = function(){
+        add();
+        var node = member(100,50).attr('.label/text', 'Node '+ counter);
+        graph.addCell(node);
+      };
+      
+      //connects to the link button in the toolbar
+      var linking = document.getElementById("linkBtn");
+      
+      //The magnet attribute of all nodes is by default "passive". Meaning no linking
+      //can happen to or from the node. When the link button is pressed, all the 
+      //node elements of the graph have their magnet attributes switched to "true".
+      //The node button is also disabled until the link button is clicked and the 
+      //magnet attributes are switched again.
+      linking.onclick = function(){
+
+        var elementBelow = graph.get('cells').find(function(cell) {
+        
+          if (cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'passive') {
+            cell.attr('rect/magnet', 'true');
+            $("#myBtn").css("pointer-events", "none");
+            $("#linkBtn").css("color", "#FF1493");
+            $("#myBtn").css("color", "#B0E0E6");
+          }
+          else if(cell instanceof joint.shapes.devs.Atomic && cell.attr('rect/magnet')== 'true'){
+            cell.attr('rect/magnet', 'passive');
+            $("#myBtn").css("pointer-events", "auto");
+            $("#linkBtn").css("color", "white");
+            $("#myBtn").css("color", "white");
+          }
+        });
+      };
+    });
+    </script>
+  </body>
+</html>
