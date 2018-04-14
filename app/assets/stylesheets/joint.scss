@@ -302,34 +302,37 @@ Do not allow adding new vertices: .connection-wrap { pointer-events: none; }
   text-decoration: none;
   cursor: pointer;
 }
-
+/*Listing inside the toolbar element*/
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color: black;
 }
 li {
-  border-right: 1px solid #bbb;
-  border-left: 1px solid #bbb;
+
   display:inline-block;
-  //margin: 0 0 0 30px;
-}
 
+}
+/* Toolbar Buttons*/
 button :hover {
-    background-color: blue;
+    color: #B0E0E6;
 }
-
 button {
-  float:right;
-  border-right: 1px solid #bbb;
-  border-left: 1px solid #bbb;
-  padding: 14px 16px;
+    float:right;
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    cursor: pointer;
+
 }
 
 
 
+/* Table */
 .table-editable {
   position: center;
   margin: 35px;
